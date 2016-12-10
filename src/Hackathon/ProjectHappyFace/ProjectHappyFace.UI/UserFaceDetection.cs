@@ -18,7 +18,7 @@ namespace ProjectHappyFace.UI
     public class UserFaceDetection
     {
 
-        public async void DetectUserImage()
+        public async Task DetectUserImage()
         {
             string statusMessage = string.Empty;
 
@@ -98,7 +98,7 @@ namespace ProjectHappyFace.UI
             }
         }
 
-        public void VerifyUserImageForRegister()
+        public async Task VerifyUserImageForRegister()
         {
             //Task<string> t = null;
 
@@ -106,9 +106,11 @@ namespace ProjectHappyFace.UI
 
             //DetectUserImage();
 
-            var task = new Task(DetectUserImage);
-            task.Start();
-            task.Wait();
+            //var task = new Task(DetectUserImage);
+            //task.Start();
+            //task.Wait();
+
+            await DetectUserImage();
 
             //DetectUserImage().Wait();
 
@@ -131,39 +133,34 @@ namespace ProjectHappyFace.UI
             
         }
 
-        private object SaveUserDatatoDatabase()
+        public Face GetUserData()
         {
-            throw new NotImplementedException();
-        }
-
-
-        static async void MakeRequest()
-        {
-            var client = new HttpClient();
-            var queryString = HttpUtility.ParseQueryString(string.Empty);
-
-            // Request headers
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "{subscription key}");
-
-            // Request parameters
-            queryString["returnFaceId"] = "true";
-            queryString["returnFaceLandmarks"] = "false";
-            queryString["returnFaceAttributes"] = "{string}";
-            var uri = "https://api.projectoxford.ai/face/v1.0/detect?" + queryString;
-
-            HttpResponseMessage response;
-
-            // Request body
-            byte[] byteData = Encoding.UTF8.GetBytes("{body}");
-
-            using (var content = new ByteArrayContent(byteData))
+            var face = new Face();
+            if (DetectedFaces.Count > 0)
             {
-               content.Headers.ContentType = new MediaTypeHeaderValue("<application/json >");
-               response = await client.PostAsync(uri, content);
-            }
+                foreach (var item in DetectedFaces)
+                {
+                    face.Age = item.Age;
+                    face.Gender = item.Gender;
+                    break;
+                }
 
+                return face;
+            }
+            else
+            {
+                return face;
+            }
         }
 
+
+        public void SaveUserData(UserData data)
+        {
+            var dataBaseCall = new DBCall();
+
+            var status = dataBaseCall.StoreUSerDataInDatabase(data);
+
+        }
 
 
 

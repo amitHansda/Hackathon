@@ -11,7 +11,7 @@ namespace ProjectHappyFace.UI.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             var a = new UserFaceDetection();
            // await a.AddImageToUser();
@@ -19,7 +19,9 @@ namespace ProjectHappyFace.UI.Controllers
             //task.Start();
             //task.Wait();
 
-            a.VerifyUserImageForRegister();
+            await a.VerifyUserImageForRegister();
+
+            var b = a.GetUserData();
             
             return View();
         }
