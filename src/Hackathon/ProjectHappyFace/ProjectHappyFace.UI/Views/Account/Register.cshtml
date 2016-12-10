@@ -2,40 +2,163 @@
 @{
     ViewBag.Title = "Register";
 }
+<h2>@ViewBag.Title</h2>
+<style>
+    
+</style>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-8 col-md-8">
+                        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form", role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <h4>Create a new account.</h4>
+                            <hr />
+                            @Html.ValidationSummary("", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Email, new { @class = "control-label" })
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Password, new { @class = "control-label" })
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
 
-<h2>@ViewBag.Title.</h2>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ConfirmPassword, new { @class = "control-label" })
+                                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" class="btn btn-default" value="Register" />
+                                </div>
+                            </div>
+                        }
+                    </div>
 
-@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
-    <h4>Create a new account.</h4>
-    <hr />
-    @Html.ValidationSummary("", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Register" />
-        </div>
-    </div>
-}
+                    <div class="col-lg-4 col-md-4">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Capturing your profile.</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="row">
+                                        <div align="center" class="embed-responsive embed-responsive-16by9">
+                                            <video id="video" class="embed-responsive-item" autoplay></video>
+                                        </div>
+                                    </div>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <button class="btn btn-success btn-sm" id="snap">
+                                                <span class="glyphicon glyphicon-camera"></span>&nbsp;
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <canvas id="canvas" width="480" height="640" ></canvas>                    
+                </div>                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="detect">Detect</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+    
+    <button id="save">Save Photo</button>
+    <script>
+        var video = document.getElementById('video');
+
+        window.onload = function () {
+            // Elements for taking the snapshot
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+            var video = document.getElementById('video');
+
+
+            // Get access to the camera!
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                // Not adding `{ audio: true }` since we only want video now
+                navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+                    video.src = window.URL.createObjectURL(stream);
+                    video.play();
+                });
+            }
+
+            // Trigger photo take
+            document.getElementById("snap").addEventListener("click", function () {
+                context.drawImage(video, 0, 0, 640, 480);
+
+                $('#myModal').modal('show');
+            });
+            function doTheCall(data) {
+                var ImageViewModel = {
+                    encodedData:data
+                };
+                fetch('/api/image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type':'application/json'
+                    },
+                    body:JSON.stringify(ImageViewModel)                    
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    console.log(data);
+                });
+            }
+            document.getElementById("detect").addEventListener("click", function () {
+                var image = new Image();
+                var dataUrl = canvas.toDataURL("image/png");
+                
+                doTheCall(dataUrl);
+            });
+
+
+            document.getElementById("save").addEventListener("click", function () {
+                var dataURL = canvas.toDataURL();
+                document.getElementById('canvas').src = dataURL;
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status == 200 && xhr.status < 300) {
+                            document.getElementById('div1').innerHTML = xhr.responseText;
+                        }
+                    }
+                }
+
+                xhr.open('POST', 'Home/getImage');
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.send(dataURL);
+
+            });
+        };
+    </script>
