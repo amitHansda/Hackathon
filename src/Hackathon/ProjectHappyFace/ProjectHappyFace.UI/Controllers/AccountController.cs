@@ -62,6 +62,72 @@ namespace ProjectHappyFace.UI.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public async Task<ActionResult> LoginCam(string returnUrl)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<ActionResult> LoginCam(LoginCamViewModel model,string returnUrl)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var userExists = UserManager.Users.Any(s => s.UserName == model.Username);
+            
+            if (userExists)
+            {
+                var something = model.ImageAsString;
+                var base64Data = Regex.Match(something, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
+                byte[] binaryArrayFromWebCam;
+                try
+                {
+                    binaryArrayFromWebCam = Convert.FromBase64String(base64Data);
+                }
+                catch (Exception)
+                {
+
+                    binaryArrayFromWebCam = null;
+                    ModelState.AddModelError("", "Something is wrong, please use other login method");
+                    return View(model);
+                }
+
+                var user = UserManager.FindByName(model.Username);
+
+                if (user.UserInfo.ProfilePicture==null)
+                {
+                    ModelState.AddModelError("", "Something is wrong, please use other login method");
+                    return View(model);
+                }
+                else
+                {
+                    UserFaceDetection detect = new UserFaceDetection();
+                    var detectionResult = await detect.CompareAndAuthenticate(binaryArrayFromWebCam,user.UserInfo.ProfilePicture );
+                    if (detectionResult)
+                    {
+                        await SignInManager.SignInAsync(user, false, false);
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else {
+                        ModelState.AddModelError("", "Don't try to login as someone else");
+                        return View(model);
+                    }
+                }
+                
+            }
+            else {
+                ModelState.AddModelError("", "Invalid login attempt.");
+                return View(model);
+            }
+            
+        }
+
         //
         // POST: /Account/Login
         [HttpPost]

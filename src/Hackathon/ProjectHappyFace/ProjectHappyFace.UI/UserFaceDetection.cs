@@ -206,10 +206,63 @@ namespace ProjectHappyFace.UI
         }
 
 
+        public async Task<bool> CompareAndAuthenticate(byte[] source, byte[] target)
+        {
+            var faceServiceClient = CognitiveServiceFramework.CreateFaceServiceClient();
+            Microsoft.ProjectOxford.Face.Contract.Face[] srcFaces;
+            Microsoft.ProjectOxford.Face.Contract.Face[] destFaces;
+            Bitmap imgSrc = null; 
+            Bitmap imgDest = null;
+            using (var srcFileStream = new MemoryStream(source))
+            {
+                
+                srcFaces = await faceServiceClient.DetectAsync(srcFileStream);
+                
+            }
+            using (var descFileStream = new MemoryStream(target))
+            {
+                
+                destFaces = await faceServiceClient.DetectAsync(descFileStream);
+                
+            }
+
+            using (var srcFileStream = new MemoryStream(source))
+            {
+                imgSrc = new Bitmap(srcFileStream);
+            }
+            using (var descFileStream = new MemoryStream(target))
+            {
+                imgDest = new Bitmap(descFileStream);
+            }
+
+            var imageInfoSrc = new Tuple<int, int>(imgSrc.Height, imgSrc.Width);
+            var imageInfoDest= new Tuple<int, int>(imgDest.Height, imgDest.Width);
+
+            if (srcFaces != null && srcFaces.Count() > 0 && destFaces != null && destFaces.Count() > 0)
+            {
+                foreach (var face in UIHelper.CalculateFaceRectangleForRendering(srcFaces, MaxImageSize,imageInfoSrc))
+                {
+                    LeftResultCollection.Add(face);
+
+                }
+                foreach (var face in UIHelper.CalculateFaceRectangleForRendering(destFaces, MaxImageSize, imageInfoDest))
+                {
+                    RightResultCollection.Add(face);
+                }
+
+                return await Face2FaceVerification();
+
+            }
 
 
 
-        private async Task Face2FaceVerification()
+            return false;
+
+        }
+
+
+
+        private async Task<bool> Face2FaceVerification()
         {
             // Call face to face verification, verify REST API supports one face to one face verification only
             // Here, we handle single face image only
@@ -229,14 +282,17 @@ namespace ProjectHappyFace.UI
                     // Verification result contains IsIdentical (true or false) and Confidence (in range 0.0 ~ 1.0),
                     // here we update verify result on UI by FaceVerifyResult binding
                     FaceVerifyResult = string.Format("Confidence = {0:0.00}, {1}", res.Confidence, res.IsIdentical ? "two faces belong to same person" : "two faces not belong to same person");
+
+                    return res.IsIdentical;
                 }
                 catch (FaceAPIException ex)
                 {
-                    return;
+                    return false;
                 }
             }
             else
             {
+                return false;
                // MessageBox.Show("Verification accepts two faces as input, please pick images with only one detectable face in it.", "Warning", MessageBoxButton.OK);
             }
             GC.Collect();

@@ -1,0 +1,147 @@
+﻿@model ProjectHappyFace.UI.Models.LoginCamViewModel
+
+@{
+    ViewBag.Title = "Login Using Camera";
+}
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+                <h4 class="modal-title">Capturing Your Image</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <canvas id="canvas" width="480" height="640"></canvas>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="confirmImage">Confirm</button>
+                
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">@ViewBag.Title</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div align="center" class="embed-responsive embed-responsive-16by9">
+                                <video id="video" class="embed-responsive-item" autoplay></video>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <button id="snap">Take Picture</button>                            
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                        @using (Html.BeginForm("LoginCam", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", @role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary("", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Username)
+                                @Html.TextBoxFor(m => m.Username)
+                            </div>
+                            @Html.HiddenFor(m => m.ImageAsString)
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-default" value="Login" />
+                            </div>
+                        }
+                    </div>
+                </div>
+                
+                <div class="col-sm-4">
+                    
+
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var video = document.getElementById('video');
+
+    window.onload = function () {
+        // Elements for taking the snapshot
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        var video = document.getElementById('video');
+
+
+        // Get access to the camera!
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Not adding `{ audio: true }` since we only want video now
+            navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+                video.src = window.URL.createObjectURL(stream);
+                video.play();
+            });
+        }
+
+        // Trigger photo take
+        document.getElementById("snap").addEventListener("click", function () {
+            context.drawImage(video, 0, 0, 640, 480);
+            $('#myModal').modal('show');
+        });
+        function doTheCall(data) {
+            var ImageViewModel = {
+                encodedData: data
+            };
+            fetch('/api/image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(ImageViewModel)
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                if (data && data.length > 0) {
+                    $("#Gender").val(data[0].FaceAttributes["Gender"]);
+                    $("#Age").val(data[0].FaceAttributes["Age"]);
+                } else {
+                    console.log('False');
+                }
+            });
+        }
+        document.getElementById("confirmImage").addEventListener("click", function () {
+            var image = new Image();
+            var dataUrl = canvas.toDataURL("image/png");
+            $("#ImageAsString").val(dataUrl);
+            $('#myModal').modal('hide');
+            
+        });
+
+
+        document.getElementById("save").addEventListener("click", function () {
+            var dataURL = canvas.toDataURL();
+            document.getElementById('canvas').src = dataURL;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status == 200 && xhr.status < 300) {
+                        document.getElementById('div1').innerHTML = xhr.responseText;
+                    }
+                }
+            }
+
+            xhr.open('POST', 'Home/getImage');
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(dataURL);
+
+        });
+    };
+</script>

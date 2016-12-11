@@ -62,6 +62,16 @@ namespace ProjectHappyFace.UI.Models
         public bool RememberMe { get; set; }
     }
 
+    public class LoginCamViewModel
+    {
+        [Required]
+        [Display(Name ="User Name")]
+        public string Username { get; set; }
+
+        public string ImageAsString { get; set; }
+
+    }
+
     public class RegisterViewModel
     {
         [Required]

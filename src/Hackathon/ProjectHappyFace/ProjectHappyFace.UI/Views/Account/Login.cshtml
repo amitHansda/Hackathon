@@ -25,7 +25,8 @@
                     <div class="row">
                         <div id="divLoginButtons" class="col-sm-12">
                             <div>
-                                <button type="button" class="btn btn-primary btn-lg btn-block" id="btnLoginUsingCamera">Login using you camera</button>
+                                @Html.ActionLink("Login using you camera", "LoginCam", new { ReturnUrl = ViewBag.ReturnUrl },new { @class= "btn btn-primary btn-lg btn-block"})
+                                @*<button type="button" class="btn btn-primary btn-lg btn-block" id="btnLoginUsingCamera"></button>*@
                                 <button type="button" class="btn btn-primary btn-lg btn-block" id="btnLoginUsingCred">Login using your credential</button>                                
                             </div>
                         </div>
