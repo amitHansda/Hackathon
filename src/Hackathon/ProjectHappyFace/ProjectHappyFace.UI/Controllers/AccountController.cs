@@ -83,6 +83,14 @@ namespace ProjectHappyFace.UI.Controllers
             
             if (userExists)
             {
+                var user = UserManager.FindByName(model.Username);
+                var passwordIsValid = await UserManager.CheckPasswordAsync(user, model.Password);
+                if (!passwordIsValid)
+                {
+                    ModelState.AddModelError("", "User Id/Password is Invalid");
+                    return View(model);
+                }
+
                 var something = model.ImageAsString;
                 var base64Data = Regex.Match(something, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
                 byte[] binaryArrayFromWebCam;
@@ -96,15 +104,7 @@ namespace ProjectHappyFace.UI.Controllers
                     binaryArrayFromWebCam = null;
                     ModelState.AddModelError("", "Something is wrong, please use other login method");
                     return View(model);
-                }
-
-                var user = UserManager.FindByName(model.Username);
-                var passwordIsValid = await UserManager.CheckPasswordAsync(user, model.Password);
-                if (!passwordIsValid)
-                {
-                    ModelState.AddModelError("", "User Id/Password is Invalid");
-                    return View(model);
-                }
+                }                
                 if (user.UserInfo.ProfilePicture==null)
                 {
                     ModelState.AddModelError("", "Something is wrong, please use other login method");
