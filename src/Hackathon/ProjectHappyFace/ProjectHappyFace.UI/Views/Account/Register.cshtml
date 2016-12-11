@@ -142,7 +142,12 @@
                 }).then(function (response) {
                     return response.json();
                 }).then(function (data) {
-                    console.log(data);
+                    if (data && data.length > 0) {
+                        $("#Gender").val(data[0].FaceAttributes["Gender"]);
+                        $("#Age").val(data[0].FaceAttributes["Age"]);
+                    } else {
+                        console.log('False');
+                    }
                 });
             }
             document.getElementById("detect").addEventListener("click", function () {
