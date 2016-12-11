@@ -11,6 +11,8 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Net.Http.Headers;
 using System.Text;
+using Microsoft.ProjectOxford.Face;
+using System.IO;
 
 namespace ProjectHappyFace.UI.Controllers
 {
@@ -46,34 +48,11 @@ namespace ProjectHappyFace.UI.Controllers
 
             var base64Data = Regex.Match(something, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
             var binData = Convert.FromBase64String(base64Data);
+            MemoryStream fileStream = new MemoryStream(binData);
+            var faceServiceClient = CognitiveServiceFramework.CreateFaceServiceClient();
 
-            var client = new HttpClient();
-            var queryString = HttpUtility.ParseQueryString(string.Empty);
-
-            // Request headers
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "012ddb775b0b4285a89e6643cf947757");
-
-            // Request parameters
-            queryString["returnFaceId"] = "true";
-            queryString["returnFaceLandmarks"] = "false";
-            queryString["returnFaceAttributes"] = "age,gender,smile,glasses";
-            var uri = "https://api.projectoxford.ai/face/v1.0/detect?" + queryString;
-
-            HttpResponseMessage response;
-
-            // Request body
-            //byte[] byteData = Encoding.UTF8.GetBytes("{body}");
-            var stringContent = string.Empty;
-            using (var content = new ByteArrayContent(binData))
-            {
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                response = await client.PostAsync(uri, content);
-                
-            }
-
-
-            stringContent = await response.Content.ReadAsStringAsync();
-            return Ok(new {respone= stringContent });
+            Microsoft.ProjectOxford.Face.Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair });
+            return Ok(faces);
         }
         // PUT: api/Image/5
         public void Put(int id, [FromBody]string value)
