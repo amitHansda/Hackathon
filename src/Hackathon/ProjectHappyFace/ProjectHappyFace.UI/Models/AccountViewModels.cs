@@ -68,6 +68,11 @@ namespace ProjectHappyFace.UI.Models
         [Display(Name ="User Name")]
         public string Username { get; set; }
 
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Required(AllowEmptyStrings =false,ErrorMessage ="You have not verfied your Image")]        
         public string ImageAsString { get; set; }
 
     }

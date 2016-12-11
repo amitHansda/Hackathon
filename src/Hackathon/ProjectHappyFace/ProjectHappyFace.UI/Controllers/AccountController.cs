@@ -99,7 +99,12 @@ namespace ProjectHappyFace.UI.Controllers
                 }
 
                 var user = UserManager.FindByName(model.Username);
-
+                var passwordIsValid = await UserManager.CheckPasswordAsync(user, model.Password);
+                if (!passwordIsValid)
+                {
+                    ModelState.AddModelError("", "User Id/Password is Invalid");
+                    return View(model);
+                }
                 if (user.UserInfo.ProfilePicture==null)
                 {
                     ModelState.AddModelError("", "Something is wrong, please use other login method");
@@ -111,8 +116,23 @@ namespace ProjectHappyFace.UI.Controllers
                     var detectionResult = await detect.CompareAndAuthenticate(binaryArrayFromWebCam,user.UserInfo.ProfilePicture );
                     if (detectionResult)
                     {
-                        await SignInManager.SignInAsync(user, false, false);
-                        return RedirectToAction("Index", "Home");
+
+                        //await SignInManager.SignInAsync(user, false, false);
+                        
+                        var signInResult = await SignInManager.PasswordSignInAsync(model.Username, model.Password,false, shouldLockout: false);
+                        switch (signInResult)
+                        {
+                            case SignInStatus.Success:
+                                return RedirectToLocal(returnUrl);                                
+                            case SignInStatus.LockedOut:
+                                return View("Lockout");
+                            case SignInStatus.RequiresVerification:
+                                return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
+                            case SignInStatus.Failure:                               
+                            default:
+                                ModelState.AddModelError("", "Invalid login attempt.");
+                                return View(model);
+                        }                        
                     }
                     else {
                         ModelState.AddModelError("", "Don't try to login as someone else");
