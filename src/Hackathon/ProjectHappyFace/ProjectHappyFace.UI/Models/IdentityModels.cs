@@ -25,6 +25,8 @@ namespace ProjectHappyFace.UI.Models
         public int Id { get; set; }
         public int Age { get; set; }
         public string Gender { get; set; }
+
+        public byte[] ProfilePicture { get; set; }
     }
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {

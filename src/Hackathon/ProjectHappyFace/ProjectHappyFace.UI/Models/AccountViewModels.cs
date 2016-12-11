@@ -91,6 +91,8 @@ namespace ProjectHappyFace.UI.Models
         [Required]
         [Display(Name ="Age")]
         public int Age { get; set; }
+
+        public string ImageDataAsString { get; set; }
     }
 
     public class ResetPasswordViewModel

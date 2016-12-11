@@ -193,6 +193,10 @@
     <Compile Include="Migrations\201612110716558_AddUserInfoTable.Designer.cs">
       <DependentUpon>201612110716558_AddUserInfoTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201612110931434_AddProfilePicToUserInfo.cs" />
+    <Compile Include="Migrations\201612110931434_AddProfilePicToUserInfo.Designer.cs">
+      <DependentUpon>201612110931434_AddProfilePicToUserInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -289,6 +293,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201612110716558_AddUserInfoTable.resx">
       <DependentUpon>201612110716558_AddUserInfoTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612110931434_AddProfilePicToUserInfo.resx">
+      <DependentUpon>201612110931434_AddProfilePicToUserInfo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

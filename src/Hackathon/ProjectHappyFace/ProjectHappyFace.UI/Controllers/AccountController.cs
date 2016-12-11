@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using ProjectHappyFace.UI.Models;
+using System.Text.RegularExpressions;
 
 namespace ProjectHappyFace.UI.Controllers
 {
@@ -149,13 +150,28 @@ namespace ProjectHappyFace.UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
+            
             if (ModelState.IsValid)
             {
+                var something = model.ImageDataAsString;
+                var base64Data = Regex.Match(something, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
+                byte[] binaryArray;
+                try
+                {
+                    binaryArray = Convert.FromBase64String(base64Data);
+                }
+                catch (Exception)
+                {
+
+                    binaryArray = null;
+                }
+                
                 var user = new ApplicationUser {
                     UserName = model.Username, Email = model.Email,
                     UserInfo =new ApplicationUserInfo {
                         Gender =model.Gender,
-                        Age =model.Age
+                        Age =model.Age,
+                        ProfilePicture = binaryArray
                     }
                 };
                 var result = await UserManager.CreateAsync(user, model.Password);

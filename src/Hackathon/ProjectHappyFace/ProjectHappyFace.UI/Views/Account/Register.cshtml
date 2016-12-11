@@ -43,6 +43,7 @@
                                 @Html.LabelFor(m => m.Age, new { @class = "control-label" })
                                 @Html.TextBoxFor(m => m.Age, new { @class = "form-control" })
                             </div>
+                            @Html.HiddenFor(m=>m.ImageDataAsString)
                             <div class="form-group">
                                 <input type="submit" class="btn btn-default" value="Register" />
                             </div>
@@ -153,7 +154,7 @@
             document.getElementById("detect").addEventListener("click", function () {
                 var image = new Image();
                 var dataUrl = canvas.toDataURL("image/png");
-
+                $("#ImageDataAsString").val(dataUrl);
                 doTheCall(dataUrl);
             });
 
