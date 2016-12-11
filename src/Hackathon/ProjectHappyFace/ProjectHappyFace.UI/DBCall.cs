@@ -24,14 +24,13 @@ namespace ProjectHappyFace.UI
             }
             catch (Exception)
             {
-                
-                throw;
+                return 0;
+                //throw;
             }
             finally
             {
-
+                con.Close();
             }
-            return 0;
         }
 
 

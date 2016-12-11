@@ -13,21 +13,22 @@ namespace ProjectHappyFace.UI.Controllers
     {
         public async Task<ActionResult> Index()
         {
-            var a = new UserFaceDetection();
-           // await a.AddImageToUser();
-            //Task task = new Task(a.DetectUserImage);
-            //task.Start();
-            //task.Wait();
+            string path = @"C:\Users\nirotpalm626\Desktop\Hackathon\Cognitive-Face-Windows-master\Cognitive-Face-Windows-master\Data\PersonGroup\Family1-Dad\Family1-Dad1.jpg";
+            var userFaceLayer = new UserFaceDetection();
+            await userFaceLayer.VerifyUserImageForRegister(path);
 
-            await a.VerifyUserImageForRegister();
-
-            var b = a.GetUserData();
+            var userDetected = userFaceLayer.GetUserData();
             
             return View();
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
+            string webCamPath = @"C:\Users\nirotpalm626\Desktop\Hackathon\Cognitive-Face-Windows-master\Cognitive-Face-Windows-master\Data\PersonGroup\Family1-Dad\Family1-Dad1.jpg";
+            
+            var userFaceLayer = new UserFaceDetection();
+            var result = await userFaceLayer.CompareAndAuthenticateData(webCamPath);
+
             ViewBag.Message = "Your application description page.";
 
             return View();
