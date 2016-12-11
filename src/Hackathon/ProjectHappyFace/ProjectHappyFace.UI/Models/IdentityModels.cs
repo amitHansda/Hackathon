@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
+//Main Application DbContext
 namespace ProjectHappyFace.UI.Models
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
@@ -16,8 +17,15 @@ namespace ProjectHappyFace.UI.Models
             // Add custom user claims here
             return userIdentity;
         }
-    }
 
+        public virtual ApplicationUserInfo UserInfo { get; set; }
+    }
+    public class ApplicationUserInfo
+    {
+        public int Id { get; set; }
+        public int Age { get; set; }
+        public string Gender { get; set; }
+    }
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
@@ -25,6 +33,9 @@ namespace ProjectHappyFace.UI.Models
         {
 
         }
+
+
+        public virtual DbSet<ApplicationUserInfo> UserInfos { get; set; }
 
         public static ApplicationDbContext Create()
         {

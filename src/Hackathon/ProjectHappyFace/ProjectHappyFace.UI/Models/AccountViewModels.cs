@@ -68,6 +68,10 @@ namespace ProjectHappyFace.UI.Models
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
+        [Required]
+        [Display(Name ="Username")]
+        public string Username { get; set; }
+        
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
@@ -79,6 +83,14 @@ namespace ProjectHappyFace.UI.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        [Display(Name ="Gender")]
+        public string Gender { get; set; }
+
+        [Required]
+        [Display(Name ="Age")]
+        public int Age { get; set; }
     }
 
     public class ResetPasswordViewModel
