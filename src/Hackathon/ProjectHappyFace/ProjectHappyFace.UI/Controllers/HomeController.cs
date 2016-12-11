@@ -25,13 +25,6 @@ namespace ProjectHappyFace.UI.Controllers
 
         public async Task<ActionResult> About()
         {
-            string webCamPath = @"C:\Users\nirotpalm626\Desktop\Hackathon\Cognitive-Face-Windows-master\Cognitive-Face-Windows-master\Data\PersonGroup\Family1-Dad\Family1-Dad1.jpg";
-            
-            var userFaceLayer = new UserFaceDetection();
-            var result = await userFaceLayer.CompareAndAuthenticateData(webCamPath);
-
-            ViewBag.Message = "Your application description page.";
-
             return View();
         }
 

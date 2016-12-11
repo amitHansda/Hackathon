@@ -2,10 +2,16 @@
 @{
     ViewBag.Title = "Register";
 }
-<h2>@ViewBag.Title</h2>
-<style>
 
+<style>
+    body{
+        background-image:url("~/../../Images/paper-register.jpg")
+    }
+    h2{
+        color:wheat;
+    }
 </style>
+<h2>@ViewBag.Title</h2>
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-primary">
@@ -46,6 +52,7 @@
                             @Html.HiddenFor(m=>m.ImageDataAsString)
                             <div class="form-group">
                                 <input type="submit" class="btn btn-default" value="Register" />
+                                @Html.ActionLink("Back","Login",null,new { @class="btn btn-danger"})
                             </div>
                         }
                     </div>
@@ -62,15 +69,12 @@
                                             <video id="video" class="embed-responsive-item" autoplay></video>
                                         </div>
                                     </div>
-
-                                    <div class="row">
-                                        <div class="col-xs-12">
-                                            <button class="btn btn-success btn-sm" id="snap">
-                                                <span class="glyphicon glyphicon-camera"></span>&nbsp;
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
+                            </div>
+                            <div class="panel-footer">
+                                <button class="btn btn-success btn-block" id="snap">
+                                    <span class="glyphicon glyphicon-camera"></span>&nbsp; Click &amp; Verify
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -104,7 +108,6 @@
         </div>
     </div>
 
-    <button id="save">Save Photo</button>
     <script>
         var video = document.getElementById('video');
 
