@@ -22,7 +22,7 @@ namespace ProjectHappyFace.UI.Controllers
             
             return View();
         }
-
+        [Authorize]
         public async Task<ActionResult> About()
         {
             return View();

@@ -91,18 +91,16 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="detect">Detect</button>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Capturing Your Image</h4>
+                    @*<h4 class="modal-title">Capturing Your Image</h4>*@
                 </div>
                 <div class="modal-body">
                     <div>
                         <canvas id="canvas" width="480" height="640"></canvas>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success" id="detect">Detect</button>
-                </div>
+                </div>                
             </div>
 
         </div>
@@ -147,8 +145,10 @@
                     return response.json();
                 }).then(function (data) {
                     if (data && data.length > 0) {
+                        var intAge = parseInt(data[0].FaceAttributes["Age"]);
                         $("#Gender").val(data[0].FaceAttributes["Gender"]);
-                        $("#Age").val(data[0].FaceAttributes["Age"]);
+                        $("#Age").val(intAge);
+                        //$("#Age").val(data[0].FaceAttributes["Age"]);
                     } else {
                         console.log('False');
                     }
