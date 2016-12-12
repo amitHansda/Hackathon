@@ -1,6 +1,6 @@
 # Hackathon
-Project Happy Face
 
+## Project Happy Face
 
 This is a small implementation of Microsoft Cognitive Service API in Two Factor Based Authentication. In addition to traditional User Credentials Based Authentication, user will use their image to login.
 
